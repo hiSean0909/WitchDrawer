@@ -1718,5 +1718,9 @@ This plugin runs with WitchDrawer's process permissions. These declarations do n
   <data name="PluginNetwork" xml:space="preserve"><value>Network access</value></data>
   <data name="PluginMetrics" xml:space="preserve"><value>System metrics</value></data>
   <data name="PluginFiles" xml:space="preserve"><value>File access</value></data>
+  <data name="NormalBoxInfo" xml:space="preserve"><value>Moves dropped files and folders into WitchDrawer's data folder for the app to manage.</value></data>
+  <data name="MappingBoxInfo" xml:space="preserve"><value>Stores paths to files and folders without moving them. Useful for project files shared with other apps.</value></data>
+  <data name="DrawerBoxInfo" xml:space="preserve"><value>Stores files like a normal box, with an expandable panel for accessing them.</value></data>
+  <data name="TaskBoxInfo" xml:space="preserve"><value>Add, edit, complete and archive tasks. This box does not store files.</value></data>
   <data name="RecoveredTaskBox" xml:space="preserve"><value>Recovered tasks</value></data>
 </root>

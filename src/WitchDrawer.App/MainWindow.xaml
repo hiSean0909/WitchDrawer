@@ -409,14 +409,30 @@
                                         <DropShadowEffect BlurRadius="16" ShadowDepth="4" Opacity="0.12" Direction="270" />
                                     </Border.Effect>
                                     <StackPanel MinWidth="224">
-                                        <Button Content="{loc:Text NormalBox}"
-                                                Click="OnCreateNormalBoxClicked"
-                                                Style="{StaticResource GhostButtonStyle}"
-                                                Margin="0,0,0,4"
-                                                Padding="12,10" />
-                                        <Button Content="{loc:Text MappingBox}" Click="OnCreateMappingBoxClicked" Style="{StaticResource GhostButtonStyle}" Margin="0,0,0,4" Padding="12,10" />
-                                        <Button Content="{loc:Text DrawerBox2}" Click="OnCreateDrawerBoxClicked" Style="{StaticResource GhostButtonStyle}" Margin="0,0,0,4" Padding="12,10" />
-                                        <Button Content="{loc:Text TaskBox}" Click="OnCreateTodoBoxClicked" Style="{StaticResource GhostButtonStyle}" Padding="12,10" />
+                                        <Grid Margin="0,0,0,4">
+                                            <Button Content="{loc:Text NormalBox}" Click="OnCreateNormalBoxClicked" Style="{StaticResource GhostButtonStyle}" Padding="12,10" />
+                                            <Button Content="ⓘ" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,8,0" Padding="4" Style="{StaticResource GhostButtonStyle}" AutomationProperties.Name="{loc:Text NormalBoxInfo}">
+                                                <Button.ToolTip><TextBlock MaxWidth="280" TextWrapping="Wrap" Text="{loc:Text NormalBoxInfo}" /></Button.ToolTip>
+                                            </Button>
+                                        </Grid>
+                                        <Grid Margin="0,0,0,4">
+                                            <Button Content="{loc:Text MappingBox}" Click="OnCreateMappingBoxClicked" Style="{StaticResource GhostButtonStyle}" Padding="12,10" />
+                                            <Button Content="ⓘ" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,8,0" Padding="4" Style="{StaticResource GhostButtonStyle}" AutomationProperties.Name="{loc:Text MappingBoxInfo}">
+                                                <Button.ToolTip><TextBlock MaxWidth="280" TextWrapping="Wrap" Text="{loc:Text MappingBoxInfo}" /></Button.ToolTip>
+                                            </Button>
+                                        </Grid>
+                                        <Grid Margin="0,0,0,4">
+                                            <Button Content="{loc:Text DrawerBox2}" Click="OnCreateDrawerBoxClicked" Style="{StaticResource GhostButtonStyle}" Padding="12,10" />
+                                            <Button Content="ⓘ" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,8,0" Padding="4" Style="{StaticResource GhostButtonStyle}" AutomationProperties.Name="{loc:Text DrawerBoxInfo}">
+                                                <Button.ToolTip><TextBlock MaxWidth="280" TextWrapping="Wrap" Text="{loc:Text DrawerBoxInfo}" /></Button.ToolTip>
+                                            </Button>
+                                        </Grid>
+                                        <Grid>
+                                            <Button Content="{loc:Text TaskBox}" Click="OnCreateTodoBoxClicked" Style="{StaticResource GhostButtonStyle}" Padding="12,10" />
+                                            <Button Content="ⓘ" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,8,0" Padding="4" Style="{StaticResource GhostButtonStyle}" AutomationProperties.Name="{loc:Text TaskBoxInfo}">
+                                                <Button.ToolTip><TextBlock MaxWidth="280" TextWrapping="Wrap" Text="{loc:Text TaskBoxInfo}" /></Button.ToolTip>
+                                            </Button>
+                                        </Grid>
                                     </StackPanel>
                                 </Border>
                             </Popup>

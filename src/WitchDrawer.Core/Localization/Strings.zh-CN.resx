@@ -1719,5 +1719,9 @@
   <data name="PluginNetwork" xml:space="preserve"><value>联网访问</value></data>
   <data name="PluginMetrics" xml:space="preserve"><value>系统指标读取</value></data>
   <data name="PluginFiles" xml:space="preserve"><value>文件访问</value></data>
+  <data name="NormalBoxInfo" xml:space="preserve"><value>将拖入的文件和文件夹移入 WitchDrawer 的数据目录，由应用统一管理。</value></data>
+  <data name="MappingBoxInfo" xml:space="preserve"><value>只保存文件和文件夹的路径，不移动原文件，适合项目资料和其他应用共用的文件。</value></data>
+  <data name="DrawerBoxInfo" xml:space="preserve"><value>文件存储方式与普通盒子相同，通过可展开的面板访问内容。</value></data>
+  <data name="TaskBoxInfo" xml:space="preserve"><value>用于添加、编辑、完成和归档任务，不用于存放文件。</value></data>
   <data name="RecoveredTaskBox" xml:space="preserve"><value>已恢复的待办</value></data>
 </root>
