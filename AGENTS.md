@@ -42,3 +42,6 @@
 - For a new GitHub release, push the matching `vX.Y.Z` tag and upload all four assets. For a packaging-only correction to an existing release, use `gh release upload vX.Y.Z ... --clobber`, then verify with `gh release view vX.Y.Z --json assets,url`.
 - Do not consider a release complete unless GitHub shows both an installable `Setup.exe` and a portable ZIP, each with its matching SHA-256 file. Remote release publication is an external write and requires explicit user authorization.
 
+
+- For each subsequent project change, increment the patch version and generate a new portable package; keep version information aligned.
+- Deliver portable packages only. While the existing packaging script still supports installers, use `-SkipInstaller` and validate the ZIP and its SHA-256 sidecar. This requirement supersedes installer-specific release instructions above.
