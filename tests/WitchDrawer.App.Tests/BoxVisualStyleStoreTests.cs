@@ -72,7 +72,7 @@ public sealed class BoxVisualStyleStoreTests
     }
 
     [Fact]
-    public async Task LoadAsync_IgnoresSavedStyleForMappingBox()
+    public async Task LoadAsync_RestoresSavedStyleForMappingBox()
     {
         await using var workspace = await TestWorkspace.CreateAsync();
         var box = CreateBox(BoxType.Mapping);
@@ -82,7 +82,26 @@ public sealed class BoxVisualStyleStoreTests
 
         var style = await workspace.Store.LoadAsync(box);
 
-        Assert.Equal(BoxVisualStyle.Modern, style);
+        Assert.Equal(BoxVisualStyle.Pixel, style);
+    }
+
+    [Fact]
+    public async Task MappingBox_NameVisibilityAndBackgroundPersistIndependently()
+    {
+        await using var workspace = await TestWorkspace.CreateAsync();
+        var box = CreateBox(BoxType.Mapping);
+        var first = new BoxViewModel(box, workspace.DrawerService, BoxVisualStyle.Modern, false);
+        await first.InitializeSettingsAsync();
+        Assert.True(first.IsFileNameVisible);
+        await first.ToggleFileNameVisibilityCommand.ExecuteAsync(null);
+        await first.SetBackgroundColorAsync("#123456");
+
+        var reloaded = new BoxViewModel(box, workspace.DrawerService, BoxVisualStyle.Modern, false);
+        await reloaded.InitializeSettingsAsync();
+        Assert.False(reloaded.IsFileNameVisible);
+        Assert.Equal("#123456", reloaded.BackgroundColor);
+        await reloaded.SetBackgroundColorAsync("");
+        Assert.Equal("", await workspace.DrawerService.GetSettingAsync(BoxViewModel.GetBackgroundColorSettingKey(box.Id)));
     }
 
     private static Box CreateBox(BoxType type)

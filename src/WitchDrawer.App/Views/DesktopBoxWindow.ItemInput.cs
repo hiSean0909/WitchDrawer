@@ -12,6 +12,11 @@ namespace WitchDrawer.App.Views;
 /// </summary>
 public partial class DesktopBoxWindow
 {
+    private async void OnRecycleIconClick(object sender, RoutedEventArgs e)
+    {
+        e.Handled = true;
+        if (sender is Button { DataContext: DrawerItemViewModel item }) await ViewModel.RecycleItemAsync(item);
+    }
     private async void OnDrawerIconPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         if (sender is not Button { DataContext: DrawerCoverTileViewModel { Item: not null } tile })
@@ -162,6 +167,11 @@ public partial class DesktopBoxWindow
 
     private void OnIconPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
+        if (e.OriginalSource is DependencyObject source && FindVisualAncestor<Button>(source) is not null)
+        {
+            ClearPendingIconDrag();
+            return;
+        }
         if (_itemDragGate.IsEntered)
         {
             e.Handled = true;
@@ -192,6 +202,7 @@ public partial class DesktopBoxWindow
 
     private async void OnItemsMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
+        if (e.OriginalSource is DependencyObject source && FindVisualAncestor<Button>(source) is not null) return;
         if (!DesktopItemInputRules.ShouldOpenOnDoubleClick(e.ChangedButton))
         {
             return;

@@ -385,6 +385,31 @@ public sealed partial class DrawerService : ISettingsStore
     public Task<ItemDeleteResult> DeleteItemAsync(Guid itemId, CancellationToken cancellationToken = default)
         => Task.Run(() => DeleteItemWithGateAsync(itemId, null, cancellationToken), cancellationToken);
 
+    public Task RecycleItemFromBoxAsync(Guid boxId, Guid itemId, Action<string, bool> recycle, CancellationToken cancellationToken = default)
+        => Task.Run(async () =>
+        {
+            await _fileOperationGate.WaitAsync(cancellationToken);
+            try
+            {
+                var item = await _repository.GetItemAsync(itemId, cancellationToken)
+                    ?? throw new InvalidOperationException("Item does not exist.");
+                if (item.BoxId != boxId) throw new InvalidOperationException(Strings.Get("TheFileMovedToAnotherBoxRefreshAndTry"));
+                var pending = await _repository.GetPendingFileOperationsAsync(cancellationToken);
+                if (pending.Any(operation => operation.ItemId == itemId))
+                    throw new InvalidOperationException(Strings.Get("TheFileHasAPendingOperationOrItsRecord"));
+                if (!string.IsNullOrWhiteSpace(item.StoredPath))
+                {
+                    var path = PathSafety.GetFullExistingPath(item.StoredPath);
+                    PathSafety.EnsureChildPath(_paths.BoxesDirectory, path);
+                    cancellationToken.ThrowIfCancellationRequested();
+                    recycle(path, Directory.Exists(path));
+                }
+                await _repository.RemoveItemAsync(itemId, CancellationToken.None);
+                Changes.Publish(boxId);
+            }
+            finally { _fileOperationGate.Release(); }
+        }, cancellationToken);
+
     public Task<ItemDeleteResult> DeleteItemFromBoxAsync(Guid boxId, Guid itemId, CancellationToken cancellationToken = default)
         => Task.Run(() => DeleteItemWithGateAsync(itemId, boxId, cancellationToken), cancellationToken);
 

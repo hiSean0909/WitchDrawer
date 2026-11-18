@@ -23,6 +23,17 @@ public partial class BoxDisplaySettingsView : UserControl
 
     public BoxDisplaySettingsView() => InitializeComponent();
 
+    private async void OnSaveBackgroundColor(object sender, RoutedEventArgs e) => await SaveBackgroundColorAsync(BackgroundColorInput.Text);
+    private async void OnResetBackgroundColor(object sender, RoutedEventArgs e) => await SaveBackgroundColorAsync("");
+
+    private async Task SaveBackgroundColorAsync(string color)
+    {
+        if (DataContext is not MainViewModel { SelectedBox: { } box } model) return;
+        try { await box.SetBackgroundColorAsync(color); }
+        catch (Exception exception) { Logger?.Error(exception, "Failed to save box background color."); model.ReportStatus(exception.Message); }
+        BackgroundColorInput.GetBindingExpression(TextBox.TextProperty)?.UpdateTarget();
+    }
+
     internal Size MeasureExpandedSize(double availableWidth)
     {
         var visibility = FixedSizeControls.Visibility;

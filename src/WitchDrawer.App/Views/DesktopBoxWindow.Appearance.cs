@@ -10,6 +10,25 @@ namespace WitchDrawer.App.Views;
 /// </summary>
 public partial class DesktopBoxWindow
 {
+    private string? _backgroundColor;
+
+    public void SetBackgroundColor(string? color)
+    {
+        _backgroundColor = WitchDrawer.Core.Models.ThemeCustomization.NormalizeColor(color);
+        AppThemeManager.ApplyDesktopBoxResources(Resources);
+        ApplyBackgroundColor();
+    }
+
+    private void ApplyBackgroundColor()
+    {
+        if (_backgroundColor is null) return;
+        var rgb = (Color)ColorConverter.ConvertFromString(_backgroundColor);
+        foreach (var key in new[] { "GlassSurfaceBrush", "DrawerSecondarySurfaceBrush" })
+        {
+            if (Resources[key] is SolidColorBrush original)
+                Resources[key] = new SolidColorBrush(Color.FromArgb(original.Color.A, rgb.R, rgb.G, rgb.B));
+        }
+    }
     public void SetPositionLocked(bool isPositionLocked)
     {
         if (_isPositionLocked == isPositionLocked)
@@ -72,6 +91,7 @@ public partial class DesktopBoxWindow
         CompositionTarget.Rendering -= OnPendingAppearanceFrame;
         _isBoxOpacityRefreshQueued = false;
         AppThemeManager.ApplyDesktopBoxResources(Resources);
+        ApplyBackgroundColor();
         ViewModel.LayoutSettings.ApplyCornerScale(AppThemeManager.GetCustomization(AppThemeManager.CurrentTheme).IconCornerScale ?? 1);
     }
 
@@ -80,6 +100,7 @@ public partial class DesktopBoxWindow
         CompositionTarget.Rendering -= OnPendingAppearanceFrame;
         _isBoxOpacityRefreshQueued = false;
         AppThemeManager.ApplyDesktopBoxResources(Resources);
+        ApplyBackgroundColor();
         ViewModel.LayoutSettings.ApplyCornerScale(AppThemeManager.GetCustomization(AppThemeManager.CurrentTheme).IconCornerScale ?? 1);
         AppThemeManager.ApplyToWindow(this);
     }

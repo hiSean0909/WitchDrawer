@@ -116,6 +116,13 @@ public sealed partial class DesktopBoxManager : IBoxContentRefreshTarget
         WeakReferenceMessenger.Default.Register<DesktopBoxManager, BoxFileNameVisibilityChangedMessage>(
             this,
             static (recipient, message) => recipient.ApplyFileNameVisibility(message));
+        WeakReferenceMessenger.Default.Register<DesktopBoxManager, BoxBackgroundColorChangedMessage>(
+            this,
+            static (recipient, message) =>
+            {
+                if (recipient._windows.TryGetValue(message.BoxId, out var window))
+                    window.SetBackgroundColor(message.Color);
+            });
         WeakReferenceMessenger.Default.Register<DesktopBoxManager, BoxHoverRollUpEnabledChangedMessage>(
             this,
             static (recipient, message) => recipient.ApplyHoverRollUpEnabled(message));
@@ -238,6 +245,10 @@ public sealed partial class DesktopBoxManager : IBoxContentRefreshTarget
                     await viewModel.LoadSizeModeAsync(startupSnapshot);
 
                     window = new DesktopBoxWindow(viewModel);
+                    var backgroundColor = startupSnapshot is not null
+                        ? startupSnapshot.Get(BoxViewModel.GetBackgroundColorSettingKey(box.Id))
+                        : await _drawerService.GetSettingAsync(BoxViewModel.GetBackgroundColorSettingKey(box.Id));
+                    window.SetBackgroundColor(backgroundColor);
                     var requiresOverlapResolution =
                         await PlaceWindowAsync(window, box.Id, index);
 

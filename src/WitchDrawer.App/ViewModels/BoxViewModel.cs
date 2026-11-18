@@ -20,6 +20,7 @@ public sealed partial class BoxViewModel : LocalizedObservableObject
     private bool _isTitleVisible = true;
     private bool _isFileNameVisible;
     private bool _isHoverRollUpEnabled;
+    private string _backgroundColor = "";
     private DrawerItemSortMode _drawerItemSortMode = DrawerItemSortMode.Free;
 
     public BoxViewModel(
@@ -66,6 +67,7 @@ public sealed partial class BoxViewModel : LocalizedObservableObject
         await TryLoadAsync(() => LoadFileNameVisibilityAsync(snapshot), "file name visibility");
         await TryLoadAsync(() => LoadHoverRollUpEnabledAsync(snapshot), "hover roll-up setting");
         await TryLoadAsync(() => LoadDrawerSortModeAsync(snapshot), "drawer sort mode");
+        await TryLoadAsync(async () => BackgroundColor = ThemeCustomization.NormalizeColor(await ReadSettingAsync(GetBackgroundColorSettingKey(Id), snapshot)) ?? "", "background color");
     }
 
     private async Task TryLoadAsync(Func<Task> load, string description)
@@ -92,6 +94,18 @@ public sealed partial class BoxViewModel : LocalizedObservableObject
     }
 
     internal static string GetLayoutPresetSettingKey(Guid boxId) => $"BoxPreset_{boxId}";
+
+    internal static string GetBackgroundColorSettingKey(Guid boxId) => $"BoxBackgroundColor:{boxId:N}";
+    public string BackgroundColor { get => _backgroundColor; private set => SetProperty(ref _backgroundColor, value); }
+
+    internal async Task SetBackgroundColorAsync(string? value)
+    {
+        var color = string.IsNullOrWhiteSpace(value) ? "" : ThemeCustomization.NormalizeColor(value)
+            ?? throw new ArgumentException(Strings.Get("EnterASixDigitHEXColorSuchAs0071E3"));
+        await _settings.SetSettingAsync(GetBackgroundColorSettingKey(Id), color);
+        BackgroundColor = color;
+        WeakReferenceMessenger.Default.Send(new BoxBackgroundColorChangedMessage(Id, color));
+    }
 
     internal static string GetSizeModeSettingKey(Guid boxId) => $"BoxSizeMode:{boxId:N}";
 
@@ -142,7 +156,7 @@ public sealed partial class BoxViewModel : LocalizedObservableObject
     /// <summary>
     /// 固定 m×n 格尺寸仅适用于普通网格收纳盒；其余盒型始终自适应。
     /// </summary>
-    public bool SupportsFixedSize => Type is BoxType.Normal or BoxType.Pixel;
+    public bool SupportsFixedSize => Type is BoxType.Normal or BoxType.Pixel or BoxType.Mapping;
 
     /// <summary>
     /// 排序（自由/名称/大小/类型/修改日期）适用于所有收纳类盒型；待办盒有自己的排序语义。
@@ -156,7 +170,7 @@ public sealed partial class BoxViewModel : LocalizedObservableObject
     public string TitleVisibilityAutomationName => IsTitleVisible ? Strings.Get("HideTitle") : Strings.Get("ShowTitle");
 
     public bool SupportsFileNameVisibility =>
-        Type is BoxType.Normal or BoxType.Pixel or BoxType.Drawer;
+        Type is BoxType.Normal or BoxType.Pixel or BoxType.Mapping or BoxType.Drawer;
 
     public bool IsFileNameVisible => _isFileNameVisible;
 
@@ -199,7 +213,7 @@ public sealed partial class BoxViewModel : LocalizedObservableObject
 
     public bool IsPixelStyle => VisualStyle == BoxVisualStyle.Pixel;
 
-    public bool CanSelectVisualStyle => Type is BoxType.Normal or BoxType.Pixel;
+    public bool CanSelectVisualStyle => Type is BoxType.Normal or BoxType.Pixel or BoxType.Mapping;
 
     public bool IsPositionLocked => _isPositionLocked;
 
@@ -323,7 +337,7 @@ public sealed partial class BoxViewModel : LocalizedObservableObject
     internal async Task LoadFileNameVisibilityAsync(StartupSettingsSnapshot? snapshot = null)
     {
         var saved = await ReadSettingAsync(GetFileNameVisibilitySettingKey(Id), snapshot);
-        ApplyFileNameVisibility(bool.TryParse(saved, out var isVisible) && isVisible);
+        ApplyFileNameVisibility(bool.TryParse(saved, out var isVisible) ? isVisible : Type == BoxType.Mapping);
     }
 
     [CommunityToolkit.Mvvm.Input.RelayCommand]

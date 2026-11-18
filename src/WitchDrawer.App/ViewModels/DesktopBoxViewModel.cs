@@ -272,7 +272,7 @@ public sealed partial class DesktopBoxViewModel : LocalizedObservableObject
     /// <summary>
     /// 固定 m×n 格尺寸仅适用于普通网格收纳盒；其余盒型始终自适应。
     /// </summary>
-    public bool SupportsFixedSize => Type is BoxType.Normal or BoxType.Pixel;
+    public bool SupportsFixedSize => Type is BoxType.Normal or BoxType.Pixel or BoxType.Mapping;
 
     public BoxSizeModeState SizeMode => _sizeMode;
 

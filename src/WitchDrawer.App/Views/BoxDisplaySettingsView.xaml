@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:loc="clr-namespace:WitchDrawer.App.Localization"
              xmlns:views="clr-namespace:WitchDrawer.App.Views"
+             xmlns:infra="clr-namespace:WitchDrawer.App.Infrastructure"
              MinWidth="300">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -10,6 +11,7 @@
                 <ResourceDictionary Source="/WitchDrawer.App;component/Views/Styles/MainWindow/BoxControlsStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <infra:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
     <StackPanel x:Name="BoxControlsPageHost">
@@ -23,7 +25,7 @@
                       SelectedValue="{Binding SelectedBox.VisualStyle, Mode=OneWay}"
                       SelectionChanged="OnChoiceChanged" AutomationProperties.Name="{loc:Text IconStyle}" />
         </Grid>
-        <Grid Margin="0,0,0,10">
+        <Grid Margin="0,0,0,10" Visibility="{Binding IsSelectedTodoBox, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
             <Grid.ColumnDefinitions><ColumnDefinition Width="92" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
             <TextBlock TextWrapping="Wrap" Text="{loc:Text IconSize}" Style="{StaticResource BoxControlLabelStyle}" />
             <ComboBox x:Name="IconSizeChoice" Grid.Column="1" Style="{StaticResource BoxSettingChoiceStyle}"
@@ -39,7 +41,7 @@
                       SelectedValue="{Binding SelectedBox.IsHoverRollUpEnabled, Mode=OneWay}"
                       SelectionChanged="OnChoiceChanged" AutomationProperties.Name="{loc:Text ExpandOnHover}" />
         </Grid>
-        <Grid Margin="0,0,0,10">
+        <Grid Margin="0,0,0,10" Visibility="{Binding IsSelectedTodoBox, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
             <Grid.ColumnDefinitions><ColumnDefinition Width="92" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
             <TextBlock TextWrapping="Wrap" Text="{loc:Text BoxTitle2}" Style="{StaticResource BoxControlLabelStyle}" />
             <ComboBox x:Name="TitleChoice" Grid.Column="1" Style="{StaticResource BoxSettingChoiceStyle}"
@@ -90,6 +92,13 @@
                            Foreground="{DynamicResource TextMutedBrush}" Margin="0,8,0,0" />
             </StackPanel>
         </StackPanel>
+        <Grid Margin="0,10,0,0">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="92" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+            <TextBlock Text="{loc:Text BoxBackground}" Style="{StaticResource BoxControlLabelStyle}" />
+            <TextBox x:Name="BackgroundColorInput" Grid.Column="1" Text="{Binding SelectedBox.BackgroundColor, Mode=OneWay}" ToolTip="{loc:Text EnterASixDigitHEXColorSuchAs0071E3}" />
+            <Button Grid.Column="2" Content="{loc:Text Save}" Click="OnSaveBackgroundColor" Margin="5,0,0,0" />
+            <Button Grid.Column="3" Content="{loc:Text Default}" Click="OnResetBackgroundColor" Margin="5,0,0,0" />
+        </Grid>
         <TextBlock TextWrapping="Wrap" Text="{loc:Text ChangesApplyToDesktopBoxesImmediately}" FontSize="10.5"
                    Foreground="{DynamicResource TextMutedBrush}" Margin="0,16,0,0" />
     </StackPanel>

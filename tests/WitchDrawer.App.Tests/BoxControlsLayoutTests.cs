@@ -97,8 +97,8 @@ public sealed class BoxControlsLayoutTests
             Assert.Equal(before.Y, after.Y, precision: 2);
             var controls = (StackPanel)view.FindName("FixedSizeControls");
             Assert.Equal(initiallyFixed ? Visibility.Collapsed : Visibility.Visible, controls.Visibility);
-            Assert.Null(FindVisual<ScrollViewer>(view));
             var page = (StackPanel)view.FindName("BoxControlsPageHost");
+            Assert.Same(page, view.Content);
             var footer = Assert.IsType<TextBlock>(page.Children[^1]);
             var footerBounds = footer.TransformToAncestor(view).TransformBounds(new Rect(footer.RenderSize));
             Assert.InRange(footerBounds.Bottom, 0, view.ActualHeight + 0.01);
@@ -228,8 +228,8 @@ public sealed class BoxControlsLayoutTests
 
             await model.CreateMappingBoxCommand.ExecuteAsync(null);
             await Dispatcher.Yield(DispatcherPriority.DataBind);
-            Assert.False(model.BoxSizeSettings.HasSelection);
-            Assert.Equal(Visibility.Collapsed, ((ComboBox)view.FindName("VisualStyleChoice")).Parent is Grid grid ? grid.Visibility : Visibility.Visible);
+            Assert.True(model.BoxSizeSettings.HasSelection);
+            Assert.Equal(Visibility.Visible, ((ComboBox)view.FindName("VisualStyleChoice")).Parent is Grid grid ? grid.Visibility : Visibility.Collapsed);
             var afterSwitch = await drawer.Settings.GetAllSettingsAsync();
             foreach (var (key, value) in saved) Assert.Equal(value, afterSwitch[key]);
             Assert.DoesNotContain(afterSwitch.Keys, key => key.Contains(model.SelectedBox!.Id.ToString(), StringComparison.OrdinalIgnoreCase));

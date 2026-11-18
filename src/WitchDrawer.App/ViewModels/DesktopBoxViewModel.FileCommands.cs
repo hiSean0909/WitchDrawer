@@ -32,6 +32,11 @@ public sealed partial class DesktopBoxViewModel
         {
             foreach (var path in paths.Distinct(StringComparer.OrdinalIgnoreCase))
             {
+                if (IsFixedSize && Items.Count + succeeded >= FixedCapacity)
+                {
+                    failures.Add(Strings.Get("BoxIsFullCannotAddFiles"));
+                    break;
+                }
                 try
                 {
                     if (IsMappingBox) await _drawerService.ImportPathAsync(BoxId, path);

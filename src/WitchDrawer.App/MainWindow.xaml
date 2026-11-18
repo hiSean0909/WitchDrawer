@@ -673,7 +673,7 @@
                                         </Border>
                                     </Popup>
                                 </Grid>
-                                <Grid Margin="0,0,8,0" Visibility="{Binding IsSelectedTodoBox, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                                <Grid Margin="0,0,8,0">
                                     <Button x:Name="BoxDisplaySettingsButton" Style="{StaticResource BoxToolbarButtonStyle}" Click="OnOpenBoxDisplaySettings"
                                             AutomationProperties.Name="{loc:Text DisplaySettings}" ToolTip="{loc:Text IconsHoverTitlesAndBoxSize}">
                                         <StackPanel Orientation="Horizontal">

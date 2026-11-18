@@ -18,7 +18,7 @@ public sealed class BoxVisualStyleStore(
         CancellationToken cancellationToken = default,
         StartupSettingsSnapshot? startupSnapshot = null)
     {
-        if (box.Type is not BoxType.Normal and not BoxType.Pixel)
+        if (box.Type is not BoxType.Normal and not BoxType.Pixel and not BoxType.Mapping)
         {
             _cache[box.Id] = BoxVisualStyle.Modern;
             return BoxVisualStyle.Modern;

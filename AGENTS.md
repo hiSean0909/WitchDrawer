@@ -4,6 +4,7 @@
 - WitchDrawer is a lightweight Windows file drawer for daily desktop work.
 - The primary UI must stay native WPF. Do not replace it with Electron or a WebView shell.
 - MVP scope is limited to normal boxes, mapping boxes, and the quick panel.
+- After the user confirms a specification, continue through implementation, validation, and the required portable package without stopping at intermediate milestones. Stop early only for a genuine blocker or a user instruction; report incomplete work accurately.
 
 ## Architecture Boundaries
 - `WitchDrawer.App` owns WPF windows, view models, drag/drop, and hotkey wiring.
@@ -43,5 +44,6 @@
 - Do not consider a release complete unless GitHub shows both an installable `Setup.exe` and a portable ZIP, each with its matching SHA-256 file. Remote release publication is an external write and requires explicit user authorization.
 
 
-- For each subsequent project change, increment the patch version and generate a new portable package; keep version information aligned.
+- `spec.md` is the product manual for the latest portable package.
+- For each version iteration, update `spec.md` first and revise it as needed. Begin development only after the user confirms the specification. Increment the patch version once for the completed iteration, generate a new portable package, and keep version information aligned; do not increment the version for each small change within the iteration.
 - Deliver portable packages only. While the existing packaging script still supports installers, use `-SkipInstaller` and validate the ZIP and its SHA-256 sidecar. This requirement supersedes installer-specific release instructions above.

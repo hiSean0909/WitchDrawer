@@ -188,6 +188,23 @@ public sealed partial class DesktopBoxViewModel
         finally { IsBusy = false; }
     }
 
+    public async Task RecycleItemAsync(DrawerItemViewModel? item)
+    {
+        if (item is null || IsBusy || Type is not (BoxType.Normal or BoxType.Pixel or BoxType.Mapping)) return;
+        try
+        {
+            IsBusy = true;
+            await _drawerService.RecycleItemFromBoxAsync(BoxId, item.Id, WitchDrawer.Native.Files.RecycleBin.Send);
+            await LoadAsync();
+        }
+        catch (Exception exception)
+        {
+            _logger.Error(exception, "Failed to recycle desktop box item.");
+            StatusText = exception.Message;
+        }
+        finally { IsBusy = false; }
+    }
+
     /// <summary>
     /// 自动排序模式的格位分配：按排序后的顺序行优先填充。不写库——仅显示层。
     /// 自适应模式沿用当前内容列宽（至少 4 列）；固定模式 wrap 到 m 列并钳制在边界内。

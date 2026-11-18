@@ -471,6 +471,10 @@
                                                FontWeight="Bold"
                                                Foreground="{DynamicResource AccentBrush}"
                                                Visibility="{Binding HasIcon, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
+                                    <Button Content="&#xE74D;" FontFamily="Segoe MDL2 Assets" Foreground="Red" FontSize="12"
+                                            HorizontalAlignment="Right" VerticalAlignment="Top" Width="22" Height="22" Padding="0"
+                                            Background="Transparent" BorderThickness="0" Click="OnRecycleIconClick"
+                                            Visibility="{Binding DataContext.SupportsRollUp, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}, Converter={StaticResource BooleanToVisibilityConverter}}" />
                                 </Grid>
                             </Border>
                             <TextBlock Text="{Binding DisplayName}"

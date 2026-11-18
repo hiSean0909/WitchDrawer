@@ -313,7 +313,7 @@ public sealed partial class DesktopBoxViewModel
     public async Task LoadFileNameVisibilityAsync(StartupSettingsSnapshot? snapshot = null)
     {
         var saved = await ReadSettingAsync(GetFileNameVisibilitySettingKey(BoxId), snapshot);
-        ApplyFileNameVisibility(bool.TryParse(saved, out var isVisible) && isVisible);
+        ApplyFileNameVisibility(bool.TryParse(saved, out var isVisible) ? isVisible : IsMappingBox);
     }
 
     public void ApplyFileNameVisibility(bool isVisible)

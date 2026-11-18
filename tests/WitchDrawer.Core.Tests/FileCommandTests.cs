@@ -8,6 +8,38 @@ namespace WitchDrawer.Core.Tests;
 public sealed class FileCommandTests
 {
     [Fact]
+    public async Task Recycle_FailureKeepsStoredFileAndRecord()
+    {
+        using var w = await Workspace.CreateAsync();
+        var item = await w.Service.ImportPathAsync(w.Box.Id, w.Source("recycle", "payload"));
+        await Assert.ThrowsAsync<IOException>(() => w.Service.RecycleItemFromBoxAsync(w.Box.Id, item.Id, (_, _) => throw new IOException("recycle failed")));
+        Assert.True(File.Exists(item.StoredPath));
+        Assert.NotNull(await w.Repository.GetItemAsync(item.Id));
+    }
+
+    [Fact]
+    public async Task Recycle_MappingRemovesOnlyReference()
+    {
+        using var w = await Workspace.CreateAsync();
+        var box = await w.Service.CreateBoxAsync("mapping", BoxType.Mapping);
+        var source = w.Source("reference", "payload");
+        var item = await w.Service.ImportPathAsync(box.Id, source);
+        await w.Service.RecycleItemFromBoxAsync(box.Id, item.Id, (_, _) => throw new Exception("must not recycle source"));
+        Assert.True(File.Exists(source));
+        Assert.Null(await w.Repository.GetItemAsync(item.Id));
+    }
+
+    [Fact]
+    public async Task Recycle_StoredItemCallsRecyclerAndRemovesRecord()
+    {
+        using var w = await Workspace.CreateAsync();
+        var item = await w.Service.ImportPathAsync(w.Box.Id, w.Source("recycle", "payload"));
+        string? recycled = null;
+        await w.Service.RecycleItemFromBoxAsync(w.Box.Id, item.Id, (path, _) => { recycled = path; File.Delete(path); });
+        Assert.Equal(item.StoredPath, recycled);
+        Assert.Null(await w.Repository.GetItemAsync(item.Id));
+    }
+    [Fact]
     public async Task ExtendedDatabaseAlias_IsRejectedWithoutChangingTheDatabase()
     {
         if (!OperatingSystem.IsWindows()) return;

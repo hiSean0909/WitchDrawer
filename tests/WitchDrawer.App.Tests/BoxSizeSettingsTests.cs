@@ -148,7 +148,7 @@ public sealed class BoxSizeSettingsTests
     }
 
     [Fact]
-    public async Task DesktopBoxViewModel_FixedSizeIsIgnoredForNonGridBoxes()
+    public async Task DesktopBoxViewModel_MappingBoxSupportsFixedGrid()
     {
         var root = CreateTempRoot();
         try
@@ -171,12 +171,12 @@ public sealed class BoxSizeSettingsTests
                 new RecordingLogger(),
                 BoxVisualStyle.Modern);
 
-            Assert.False(viewModel.SupportsFixedSize);
+            Assert.True(viewModel.SupportsFixedSize);
 
             viewModel.ApplySizeMode(new BoxSizeModeState(true, 3, 2));
 
-            Assert.False(viewModel.IsFixedSize);
-            Assert.True(double.IsNaN(viewModel.GridViewportWidth));
+            Assert.True(viewModel.IsFixedSize);
+            Assert.False(double.IsNaN(viewModel.GridViewportWidth));
         }
         finally
         {
@@ -371,7 +371,7 @@ public sealed class BoxSizeSettingsTests
     }
 
     [Fact]
-    public async Task SizeSettingsViewModel_IgnoresBoxesWithoutFixedSizeSupport()
+    public async Task SizeSettingsViewModel_AcceptsMappingBox()
     {
         var root = CreateTempRoot();
         try
@@ -385,13 +385,38 @@ public sealed class BoxSizeSettingsTests
             viewModel.SetTargetBox(
                 new BoxViewModel(mappingBox, drawerService, BoxVisualStyle.Modern, false));
 
-            Assert.Null(viewModel.SelectedBox);
-            Assert.False(viewModel.HasSelection);
+            Assert.NotNull(viewModel.SelectedBox);
+            Assert.True(viewModel.HasSelection);
         }
         finally
         {
             CleanupTempRoot(root);
         }
+    }
+
+    [Fact]
+    public async Task FixedMappingBox_PasteStopsAtCapacityAndKeepsSources()
+    {
+        var root = CreateTempRoot();
+        try
+        {
+            var (service, repository) = await CreateDrawerServiceAsync(root);
+            var box = await service.CreateBoxAsync("mapping", BoxType.Mapping);
+            var viewModel = new DesktopBoxViewModel(box, service, new TodoService(repository),
+                new NoOpFileLauncher(), new WitchDrawer.Native.Files.ShellChangeNotifierService(),
+                new RecordingLogger(), BoxVisualStyle.Modern);
+            viewModel.ApplySizeMode(new BoxSizeModeState(true, 1, 1));
+            await viewModel.LoadAsync();
+            var first = Path.Combine(root, "first.txt");
+            var second = Path.Combine(root, "second.txt");
+            File.WriteAllText(first, "one");
+            File.WriteAllText(second, "two");
+            await viewModel.PasteFilePathsAsync([first, second]);
+            Assert.Single(await service.GetItemsAsync(box.Id));
+            Assert.True(File.Exists(first));
+            Assert.True(File.Exists(second));
+        }
+        finally { CleanupTempRoot(root); }
     }
 
     [Fact]
